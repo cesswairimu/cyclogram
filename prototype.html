@@ -18,15 +18,16 @@
 
 let frameRate = 30;
 let rowNumber = 0;
-let framesPerDay = 288;
+let framesPerDay = 288/2; // remove nighttime hours, crudely
 let colNumber = 0;
 let myX = 100; // where you've clicked
 let myY = 400;
 let video;
 let playVideo = false;
 let i = 0;
-let dotSize = 3;
+let dotSize = 6;
 let steps;
+let density;
 
 function setup() {
   createCanvas(1000, 400);
@@ -38,15 +39,22 @@ function setup() {
   video.elt.load();
   noStroke();
   steps = parseInt(frameRate * video.elt.duration) // in seconds
+  density = 1;//pixelDensity();
+
+  video.elt.onclick = function click(e) {
+    myX = parseInt(e.offsetX/video.elt.clientWidth * video.width);
+    myY = parseInt(e.offsetY/video.elt.clientHeight * video.height);
+    e.preventDefault();
+  }
 }
 
 function draw() {
-  video.elt.currentTime = i/frameRate;
+//  video.elt.currentTime = i/frameRate;
   video.loadPixels();
   let color = [
-    video.pixels[myX*myY], // get red 
-    video.pixels[myX*myY], // get green
-    video.pixels[myX*myY] // get blue
+    video.pixels[(myY*video.width*4*density) + (myX*4*density)], // get red 
+    video.pixels[(myY*video.width*4*density) + (myX*4*density + 1)], // get green
+    video.pixels[(myY*video.width*4*density) + (myX*4*density + 2)] // get blue
   ];
 
   rect(i % framesPerDay * dotSize, rowNumber * dotSize, dotSize, dotSize);
