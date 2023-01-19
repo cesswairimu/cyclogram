@@ -11,9 +11,12 @@
   <style>
     html { margin: 10px; }
     video { width: 100%; }
+    #canvas { text-align: center; }
   </style>
 
   <body>
+  <div id="video"></div>
+  <div id="canvas"></div>
 <script>
 
 let frameRate = 30;
@@ -30,10 +33,10 @@ let steps;
 let density;
 
 function setup() {
-  createCanvas(1000, 400);
+  createCanvas(1000, 400).parent('canvas');
 
+  video = createVideo('river.mp4').parent('video');
   //video = createVideo('https://archive.org/download/cyclogram-timelapse-test/9-month-river-timelapse-autumn-winter-sprin.mp4')
-  video = createVideo('river.mp4');
   //video.elt.getVideoPlaybackQuality().totalVideoFrames // only how many frames have loaded so far
   video.elt.controls = true;
   video.elt.load();
