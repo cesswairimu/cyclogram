@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cyclogram.js prototype</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.5.0/lib/p5.js"></script>
+  <script src="node_modules/jquery/dist/jquery.min.js"></script>
+  <!-- <script type="module" src="main.js"></script> -->
+  <script src="src/main.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="src/main.css">
+</head>
+
+<body>
+  <!-- <div id="dragdrop">
+    <input id="input" type="file" accept=".jpg,.jpeg.,.gif,.png,.mov,.mp4" />
+    <p><strong>Select a video or image file</strong></p>
+  </div> -->
+  <div id="dropzone" class="dropzone">
+    <p id="dropzone-text">
+      <i>Select or drag in a video</i>
+    </p>
+    <center>
+      <i class="hidden fa fa-spin fa-circle-o-notch"></i>
+      <input class="btn btn-light" type="file" id="fileInput" value="" accept=".jpg,.jpeg.,.gif,.png,.mov,.mp4"><br />
+    </center>
+    <p><a href="">Try a demo video</a></p>
+  </div>
+  <center>
+    <div class="container card d-flex align-items-center justify-content-center h-100"
+      style="border: 3px solid #A9A9A9">
+      <div class="text-center">
+        <div class="card-body">
+          <!-- <div class="container center py-4 px-4 bg-primary"> -->
+          <img src="examples/header.png" height="100" width="100" />
+          <h3 class="pt-4 fs-3 text-black">Cyclogram.js</h3>
+          <div class="card-body">
+            <!-- <div class="d-inline-flex w-auto pb-2"> -->
+              <video></video>
+              <div class="pt-2 box rounded box-bg" style="height: 600px; width: 600px;">
+                <img id="Preview" class="video-thumbnail" alt="Video Preview">
+                <!-- </div> -->
+              </div>
+          </div>
+          <div class="card-body"></div>
+          <div id="video"></div>
+          <div id="canvas"></div>
+        </div>
+      </div>
+    </div>
+  </center>
+  <script>
+  </script>
+</body>
+
+</html>

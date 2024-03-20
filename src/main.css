@@ -1,0 +1,29 @@
+html {
+    margin: 10px;
+  }
+
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  #canvas {
+    text-align: center;
+  }
+
+  .dropzone {
+  padding: 30px;
+  margin: 0 20% 30px;
+  border: 4px dashed #ccc;
+  border-radius: 8px;
+  text-align: center;
+  color: #444;
+}
+
+.dropzone input {
+  max-width: 100%;
+}
+
+#box {
+
+}
