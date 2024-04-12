@@ -1,119 +1,89 @@
-// DRAG AND DROP
 
-function dragDrop() {
+let video;
+let movingMouse = false;
+let clicked = false;
+let rectX, rectY;
+let url;
+let mainCanva; // the canva with the video --- ideally the selection boxes should be within this canva
+let patternCanva; // the canva wherw we draw the pattern
+let canvaVideo;
 
-  let frameRate = 30;
-  let rowNumber = 0;
-  let framesPerDay = 288 / 2; // remove nighttime hours, crudely
-  let colNumber = 0;
-  let myX = 100; // where you've clicked
-  let myY = 400;
-  let video;
-  let playVideo = false;
-  let i = 0;
-  let dotSize = 6;
-  let steps;
-  let density;
+function setup() {
+  mainCanva = createCanvas(1000, 600).parent('canvas');
 
-  function setup() {
-    createCanvas(1000, 400).parent('canvas');
+  document.getElementById('fileInput').addEventListener('change', function (event) {
+    var file = event.target.files[0];
+    var fileReader = new FileReader();
+    fileReader.onload = function () {
+      let res = fileReader.result;
+      var blob = new Blob([fileReader.result], { type: file.type });
+      url = URL.createObjectURL(blob);
 
-    document.getElementById('input').addEventListener('change', function (event) {
-      var file = event.target.files[0];
-      var fileReader = new FileReader();
-      fileReader.onload = function () {
-        var blob = new Blob([fileReader.result], { type: file.type });
-        var url = URL.createObjectURL(blob);
-        video = createVideo(url).parent('video');
-
-        //video.elt.getVideoPlaybackQuality().totalVideoFrames // only how many frames have loaded so far
-        video.elt.controls = true;
-        video.elt.load();
-        noStroke();
-        steps = parseInt(frameRate * video.elt.duration) // in seconds
-        density = 1;//pixelDensity();
-
-        video.elt.onclick = function click(e) {
-          myX = parseInt(e.offsetX / video.elt.clientWidth * video.width);
-          myY = parseInt(e.offsetY / video.elt.clientHeight * video.height);
-          e.preventDefault();
-        }
-
-      }
-      fileReader.readAsArrayBuffer(file);
-    })
-  }
-
+      video = createVideo(url).parent('video');
+      video.loop();
+      video.showControls();
+      rect(50, 60, 40, 30);
+      video.hide();
+    }
+    fileReader.readAsArrayBuffer(file);
+    draw()
+  })
 }
+
 function draw() {
-  if (video) {
-    //  video.elt.currentTime = i/frameRate;
-    video.loadPixels();
-    let color = [
-      video.pixels[(myY * video.width * 4 * density) + (myX * 4 * density)], // get red 
-      video.pixels[(myY * video.width * 4 * density) + (myX * 4 * density + 1)], // get green
-      video.pixels[(myY * video.width * 4 * density) + (myX * 4 * density + 2)] // get blue
-    ];
+  if (!(video == null)) {
+    background(0, 0, 0, 0);
+    let img = video.get();// Set transparent background
+    canvaVideo = image(img, 0, 0); // Draw the video on the canvas
 
-    rect(i % framesPerDay * dotSize, rowNumber * dotSize, dotSize, dotSize);
-    fill(color);
-    colNumber += 1;
-    if (i % framesPerDay == 0) {
-      rowNumber += 1; // new row
-      colNumber = 0;
+    // show controls
+    videoControls();
+
+    if (clicked) {
+      stroke('red');
+      noFill()
+      rect(rectX, rectY, 60, 60);
     }
-    if (i == steps) i = 0;
-    else i++;
+
+    if (movingMouse) {
+      stroke('yellow');
+      noFill();
+      rect(mouseX, mouseY, 50, 50)
+    }
   }
 }
 
-
-function drawRect() {
-  
-  
+function mousePressed() {
+  clicked = true;
+  rectX = mouseX;
+  rectY = mouseY;
 }
 
+function mouseMoved() {
+  movingMouse = true;
+}
 
+// Event Listener for controls and toggle between play/pause
+function videoControls() {
+  let controlsSection = document.getElementById("controls-section");
+  controlsSection.style.display = 'block';
+}
 
-// PROTOTYPE
-function prototype() {
+function playVideo() {
+  video.play();
+  let playBtn = document.getElementById("playVid")
+  let pauseBtn = document.getElementById("pauseVid")
 
-  function setup() {
-    createCanvas(1000, 400).parent('canvas');
+  playBtn.style.display = 'none'
+  pauseBtn.style.display = 'block';
 
-    video = createVideo('examples/river.mp4').parent('video');
-    //video = createVideo('https://archive.org/download/cyclogram-timelapse-test/9-month-river-timelapse-autumn-winter-sprin.mp4')
-    //video.elt.getVideoPlaybackQuality().totalVideoFrames // only how many frames have loaded so far
-    video.elt.controls = true;
-    video.elt.load();
-    noStroke();
-    steps = parseInt(frameRate * video.elt.duration) // in seconds
-    density = 1;//pixelDensity();
+}
 
-    video.elt.onclick = function click(e) {
-      myX = parseInt(e.offsetX / video.elt.clientWidth * video.width);
-      myY = parseInt(e.offsetY / video.elt.clientHeight * video.height);
-      e.preventDefault();
-    }
-  }
+function pauseVideo() {
+  video.pause();
+  let playBtn = document.getElementById("playVid")
+  let pauseBtn = document.getElementById("pauseVid")
 
-  function draw() {
-    //  video.elt.currentTime = i/frameRate;
-    video.loadPixels();
-    let color = [
-      video.pixels[(myY * video.width * 4 * density) + (myX * 4 * density)], // get red 
-      video.pixels[(myY * video.width * 4 * density) + (myX * 4 * density + 1)], // get green
-      video.pixels[(myY * video.width * 4 * density) + (myX * 4 * density + 2)] // get blue
-    ];
-
-    rect(i % framesPerDay * dotSize, rowNumber * dotSize, dotSize, dotSize);
-    fill(color);
-    colNumber += 1;
-    if (i % framesPerDay == 0) {
-      rowNumber += 1; // new row
-      colNumber = 0;
-    }
-    if (i == steps) i = 0;
-    else i++;
-  }
+  playBtn.style.display = 'block';
+  pauseBtn.style.display = 'none';
 }
