@@ -79,14 +79,19 @@
     let rectX, rectY;
     let url;
     let mainCanva; // the canva with the video --- ideally the selection boxes should be within this canva
-    let patternCanva; // the canva wherw we draw the pattern
+    // let patternCanva; // the canva wherw we draw the pattern
     let controlsSection = document.getElementById("controls-section");
-    let canvaVideo;
+    // let canvaVideo;
+    let patternGraphics; // the canva wherw we draw the pattern
+    let videoGraphics;
+    let controlsGraphics;
+    // let isOverVideo = false;
+    let rectSize = 50;
+    let canDrawRect = false
 
 
     function setup() {
-      mainCanva = createCanvas(800, 800).parent('canvas');
-      console.log(mainCanva);
+      createCanvas(800, 1000).parent('canvas');
 
       document.getElementById('input').addEventListener('change', function (event) {
         var file = event.target.files[0];
@@ -100,9 +105,13 @@
 
           video = createVideo(url).parent('video');
           video.loop();
-          video.showControls();
           rect(50, 60, 40, 30);
           video.hide();
+
+          videoGraphics = createGraphics(800, 500); // space for video display
+          controlsGraphics = createGraphics(800, 80); // space for video display
+
+          patternGraphics = createGraphics(800, 300); // space for the graph
           //video.hide();
           // rect(10,10,10,10).parent('video')
 
@@ -131,37 +140,75 @@
     function draw() {
       if (!(video == null)) {
         //console.log("draw is being reached")
-        background(0, 0, 0, 0);
-        let img = video.get();// Set transparent background
-        canvaVideo = image(img, 0, 0); // Draw the video on the canvas
+        // background(0, 0, 0, 0);
+        // let img = video.get();// Set transparent background
+        videoGraphics.image(video, 0, 0);
+        // image(img, 0, 0); // Draw the video on the canvas
+
+        // control Graphics
+        patternGraphics.background(255, 100, 255);
+        patternGraphics.fill(0, 0, 0);
+        patternGraphics.textSize(32);
+        patternGraphics.text("This is the pattern space!", 50, 50);
+
+
+        // next graphics
+        controlsGraphics.background('cyan');
+        controlsGraphics.fill(0, 0, 0);
+        controlsGraphics.textSize(22);
+        controlsGraphics.text("The video controls will go on this space!", 50, 50);
+
+
+
+        // draw both graphics
+        image(videoGraphics, 0, 0);
+        image(controlsGraphics, 0, 530)
+        image(patternGraphics, 0, 660)
+
+        // isOverVideo = mouseX >= 0 && mouseX < videoGraphics.width - rectSize && mouseY >= 0 && mouseY < videoGraphics.height - rectSize;
+        // rectY <= videoGraphics.height - rectSize) && rectX <= videoGraphics.width - rectSize
+
 
         // show controls
         videoControls();
 
-
-
+        // draw red sqq if only over the video graphics
         if (clicked) {
           stroke('red');
           noFill()
-          rect(rectX, rectY, 60, 60);
+          rect(rectX, rectY, rectSize, rectSize);
         }
 
-        if (movingMouse) {
-          stroke('yellow');
-          noFill();
-          rect(mouseX, mouseY, 50, 50)
+        if (isOverVideo()) {
+          if (movingMouse) {
+            stroke('yellow');
+            noFill();
+            rect(mouseX, mouseY, rectSize, rectSize)
+          }
         }
       }
     }
 
     function mousePressed() {
-      clicked = true;
-      rectX = mouseX;
-      rectY = mouseY;
+      if (isOverVideo()) {
+        clicked = true;
+        rectX = mouseX;
+        rectY = mouseY;
+      }
     }
 
     function mouseMoved() {
       movingMouse = true;
+    }
+
+    function isOverVideo() {
+      overVideo = mouseX >= 0 && mouseX < videoGraphics.width - rectSize && mouseY >= 0 && mouseY < videoGraphics.height - rectSize;
+      if (overVideo) {
+        return true
+      } else {
+        return false
+      }
+
     }
 
     // Event Listener for controls
@@ -298,12 +345,17 @@
     //   // add ability to select on the page using the mouse move // done
     //   // add red frame on the rectangle on select  --- // done
     //   // make the mouse move rectangle yellow --- // done
-    //   // pause the video on mouse move to the video -- maybe not pause it / have it parallel
+    //   // pause the video on mouse move to the video -- maybe not pause it / have it parallel -- maybe not??
     //   add play/pause button for new canva video // done
     //   add ability to expand the width/length on the selected section.  
-    // create a new canva for the pattern display
+    // create a new canva for the pattern display // done
     //   // on click, draw bellow a new pattern for the specific selected space.
     // maybe have an input to change the values of length and width of the selected(red) rectangle on select. 
+    // get the drag function working
+    // get the pattern display working
+    // add video controls at the bottom of the video before the pattern
+    // the rectangles only to draw within the video space. // done
+    // add space(graphics) for video controls btn pattern and video // done
 
 
     // }

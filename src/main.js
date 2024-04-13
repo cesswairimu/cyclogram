@@ -5,8 +5,8 @@ let clicked = false;
 let rectX, rectY;
 let url;
 let mainCanva; // the canva with the video --- ideally the selection boxes should be within this canva
-let patternCanva; // the canva wherw we draw the pattern
-let canvaVideo;
+let patternGraphics; // the canva wherw we draw the pattern
+let videoGraphics;
 
 function setup() {
   mainCanva = createCanvas(1000, 600).parent('canvas');
