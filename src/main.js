@@ -27,9 +27,10 @@ let pauseBtn = document.getElementById("pauseVid")
 function setup() {
   mainCanva = createCanvas(800, 1000).parent('canvas');
 
-  document.getElementById('fileInput').addEventListener('change', function (event) {
+  function createPattern(event) {
     var file = event.target.files[0];
     var fileReader = new FileReader();
+
     fileReader.onload = function () {
       var blob = new Blob([fileReader.result], { type: file.type });
       url = URL.createObjectURL(blob);
@@ -56,7 +57,10 @@ function setup() {
 
     }
     fileReader.readAsArrayBuffer(file);
-  })
+  }
+
+  $('#fileInput').on('change drop', createPattern);
+  $('.dropzone')[0].addEventListener('drop', createPattern, false);
 }
 
 function draw() {
@@ -102,7 +106,6 @@ function draw() {
 }
 
 function handleEnd() {
-  console.log("The video has ended---")
   videoPlaying = false;
 }
 
