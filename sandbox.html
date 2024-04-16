@@ -89,6 +89,22 @@
     let rectSize = 50;
     let canDrawRect = false
 
+    // frame vars
+    let frameRate = 30;
+    let rowNumber = 0;
+    let colNumber = 0;
+    let steps;
+    let density;
+    let myX = 100;
+    let myY = 400;
+    let i = 0;
+    let framesPerDay = 288 / 2;
+    let dotSize = 6;
+    let videoPlaying = true;
+
+
+
+
 
     function setup() {
       createCanvas(800, 1000).parent('canvas');
@@ -112,6 +128,24 @@
           controlsGraphics = createGraphics(800, 80); // space for video display
 
           patternGraphics = createGraphics(800, 300); // space for the graph
+
+
+
+          // setup for graph 
+          steps = parseInt(frameRate * video.elt.duration) // in seconds
+          density = 1;//pixelDensity();
+
+          video.elt.onclick = function click(e) {
+            myX = parseInt(e.offsetX / video.elt.clientWidth * video.width);
+            // console.log("my x---", myX)
+            myY = parseInt(e.offsetY / video.elt.clientHeight * video.height);
+            // console.log("myY---", myY)
+
+            e.preventDefault();
+          }
+
+
+
           //video.hide();
           // rect(10,10,10,10).parent('video')
 
@@ -142,17 +176,30 @@
         //console.log("draw is being reached")
         // background(0, 0, 0, 0);
         // let img = video.get();// Set transparent background
+        video.noLoop();
         videoGraphics.image(video, 0, 0);
         // image(img, 0, 0); // Draw the video on the canvas
 
-        // control Graphics
-        patternGraphics.background(255, 100, 255);
-        patternGraphics.fill(0, 0, 0);
-        patternGraphics.textSize(32);
-        patternGraphics.text("This is the pattern space!", 50, 50);
+        // --- pattern  Graphics ---- 
+        video.loadPixels();
+        // console.log("my x---", myX)
+        // console.log("my y---", myY)
 
 
-        // next graphics
+        drawPattern(myX, myY);
+        video.onended(handleEnd)
+
+
+
+
+        // patternGraphics.background(255, 100, 255);
+        // patternGraphics.fill(0, 0, 0);
+        // patternGraphics.textSize(32);
+        // patternGraphics.text("This is the pattern space!", 50, 50);
+
+        /// ----- end  pattern  graphics --
+
+        // control graphics
         controlsGraphics.background('cyan');
         controlsGraphics.fill(0, 0, 0);
         controlsGraphics.textSize(22);
@@ -177,6 +224,7 @@
           stroke('red');
           noFill()
           rect(rectX, rectY, rectSize, rectSize);
+          // clear patternGraphics and redraw the colors within the rectangle 
         }
 
         if (isOverVideo()) {
@@ -186,6 +234,27 @@
             rect(mouseX, mouseY, rectSize, rectSize)
           }
         }
+      }
+    }
+
+    function drawPattern(x, y){
+      let color = [
+        video.pixels[(y * video.width * 4 * density) + (x * 4 * density)], // get red 
+        video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 1)], // get green
+        video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 2)] // get blue
+      ];
+
+      patternGraphics.noStroke();
+      if (videoPlaying) {
+        patternGraphics.rect(i % framesPerDay * dotSize, rowNumber * dotSize, dotSize, dotSize);
+        patternGraphics.fill(color);
+        colNumber += 1;
+        if (i % framesPerDay == 0) {
+          rowNumber += 1; // new row
+          colNumber = 0;
+        }
+        if (i == steps) i = 0;
+        else i++;
       }
     }
 
@@ -211,6 +280,11 @@
 
     }
 
+    function handleEnd() {
+      console.log("The video has ended---")
+      videoPlaying = false;
+    }
+
     // Event Listener for controls
     // -- ideally hide the controls and display after video load.
 
@@ -221,6 +295,8 @@
     function playVideo() {
       console.log("clicked on the playvideo")
       video.play();
+      videoPlaying = true;
+
       let playBtn = document.getElementById("playVid")
       let pauseBtn = document.getElementById("pauseVid")
 
@@ -233,8 +309,11 @@
       console.log("clicked on the pause video")
 
       video.pause();
+      videoPlaying = false;
+
       let playBtn = document.getElementById("playVid")
       let pauseBtn = document.getElementById("pauseVid")
+
 
       playBtn.style.display = 'block';
       pauseBtn.style.display = 'none';
@@ -349,13 +428,18 @@
     //   add play/pause button for new canva video // done
     //   add ability to expand the width/length on the selected section.  
     // create a new canva for the pattern display // done
-    //   // on click, draw bellow a new pattern for the specific selected space.
+    //   // on click, draw bellow a new pattern for the specific selected space. // clear previous pattern??
     // maybe have an input to change the values of length and width of the selected(red) rectangle on select. 
     // get the drag function working
-    // get the pattern display working
+    // get the pattern display working // done
     // add video controls at the bottom of the video before the pattern
     // the rectangles only to draw within the video space. // done
     // add space(graphics) for video controls btn pattern and video // done
+    // pattern space between pixel(dots) to have no grids // done
+    // get the pattern to display the shade within the red rectangle if selected
+    // Get video to play completely once then stop(noLoop). // done
+    // stop drawing pattern if video has stopped playing.// video ended handled. [maybe assign on pause press and play press ??] // somewhat handled with play/pause for now 
+    //
 
 
     // }
