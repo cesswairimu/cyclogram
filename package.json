@@ -1,0 +1,30 @@
+{
+  "name": "cyclogram",
+  "version": "1.0.0",
+  "description": "\"Observe pattern changes colors using timelapse photography\"",
+  "main": "main.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cesswairimu/cyclogram.git"
+  },
+  "keywords": [
+    "timelapse",
+    "cyclogram"
+  ],
+  "author": "jywarren, cesswairimu",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/cesswairimu/cyclogram/issues"
+  },
+  "homepage": "https://github.com/cesswairimu/cyclogram#readme",
+  "dependencies": {
+    "font-awesome": "^4.7.0",
+    "http-server": "^14.1.1"
+  }
+}

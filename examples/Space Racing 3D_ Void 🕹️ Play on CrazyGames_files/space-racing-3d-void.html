@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<!-- saved from url=(0102)https://space-racing-3d-void.game-files.crazygames.com/unity/unity56/space-racing-3d-void.html?v=1.308 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><script type="text/javascript">/** These stubs are required so older Unity games can still function */
+
+const stubDebugEnabled = window.location.href.includes('iframed_unity_debug=true');
+
+let crazySDKObjectName = null;
+let majorSdkVersion = null;
+
+function debugStub(...args) {
+  if (stubDebugEnabled) {
+    console.log('[StubSDK]', ...args);
+  }
+}
+
+function stubSendUnityMessage(methodName, value) {
+  // unityGameInstance is defined in unity2020Loader.pug or unity56Loader.pug
+  if (unityGameInstance && crazySDKObjectName) {
+    unityGameInstance.SendMessage(crazySDKObjectName, methodName, value);
+  }
+}
+
+window.Crazygames = {
+  load: () => {
+    debugStub('Crazygames.load');
+  },
+  init: (options) => {
+    debugStub('Crazygames.init', options);
+    crazySDKObjectName = options.crazySDKObjectName;
+    if (options.version) {
+      majorSdkVersion = parseInt(options.version.split('.')[0]);
+    }
+    stubSendUnityMessage('AdblockNotDetected', undefined);
+  },
+  requestAd: (options) => {
+    debugStub('Crazygames.requestAd', options);
+    console.warn("Stub SDK doesn't support ads, please migrate to the new Unity SDK");
+    if (majorSdkVersion) {
+      if (majorSdkVersion >= 2) {
+        stubSendUnityMessage('AdEvent', JSON.stringify({ name: 'adError', error: "Stub SDK doesn't support ads, please migrate to the new Unity SDK" }));
+      } else {
+        stubSendUnityMessage('AdEvent', 'adError');
+      }
+    }
+  },
+  happytime: () => {
+    debugStub('Crazygames.happytime');
+  },
+  gameplayStart: () => {
+    debugStub('Crazygames.gameplayStart');
+  },
+  gameplayStop: () => {
+    debugStub('Crazygames.gameplayStop');
+  },
+  sdkGameLoadingStart: () => {
+    debugStub('Crazygames.sdkGameLoadingStart');
+  },
+  sdkGameLoadingStop: () => {
+    debugStub('Crazygames.sdkGameLoadingStop');
+  },
+  requestInviteUrl: (url) => {
+    debugStub('Crazygames.requestInviteUrl', url);
+  },
+  requestBanners: (banners) => {
+    debugStub('Crazygames.requestBanners', banners);
+    console.warn("Stub SDK doesn't support banners, please migrate to the new Unity SDK");
+  },
+  screenshotReceived: () => {
+    debugStub('Crazygames.screenshotReceived');
+  },
+  constants: [],
+  getUnityInstance: () => {},
+};
+
+window.CrazySDK = {
+  init: function (options) {
+    debugStub('CrazySDK.init', options);
+    window.Crazygames.init(options);
+  },
+  requestAd: function (adType) {
+    debugStub('CrazySDK.requestAd', adType);
+    window.Crazygames.requestAd(options);
+  },
+};</script><script type="text/javascript">window.addEventListener('blur', onBlur);
+function onBlur() {
+  window.parent.postMessage({ type: 'syncUnityData' }, '*');
+};
+function sendDelayedMemoryUsage() {
+  setTimeout(() => {
+    const windowMemory = window?.performance?.memory;
+    if (!windowMemory) {
+      return;
+    }
+    const { totalJSHeapSize, usedJSHeapSize, jsHeapSizeLimit } = windowMemory;
+    window.parent.postMessage({ type: 'unityMemoryUsage', usageData:{
+      type: 'memoryUsage',
+      totalJSHeapSize,
+      usedJSHeapSize,
+      jsHeapSizeLimit,
+    }}, '*');
+  }, 10000);
+}</script><script type="text/javascript">const ERROR_MAPPING = [
+  ['exception handling has been disabled', 'noExceptionSupport'],
+  ['The browser could not allocate enough memory', 'failedToAllocateMemory'],
+  ['Out of memory', 'outOfMemory'],
+  ['out of memory', 'outOfMemory'],
+  ['abort', 'AbortedError'],
+  ['NotAllowedError', 'NotAllowedError'],
+  ['TypeError', 'TypeError'],
+  ['ScriptError', 'ScriptError'],
+  ['NotSupportedError', 'NotSupportedError'],
+  ['RuntimeError', 'RuntimeError'],
+  ['RangeError', 'RangeError'],
+  ['InvalidStateError', 'InvalidStateError'],
+  ['SDK Not initialized', 'SDKNotInitializedError'],
+  ['NetworkError', 'NetworkError'],
+  ['DataCloneError', 'DataCloneError'],
+  ['ReferenceError', 'ReferenceError'],
+  ['SecurityError', 'SecurityError'],
+  ['InvalidAccessError', 'InvalidAccessError'],
+  ['ChunkLoadError', 'ChunkLoadError'],
+  ['QuotaExceededError', 'QuotaExceededError'],
+  ['TimeoutError', 'TimeoutError'],
+  ['NotFoundError', 'NotFoundError'],
+  ['NS_ERROR_', 'NSError'],
+  // keep this entry unknown, at the end of the list as this list is iterated sequentially
+  ['An error occurred running the Unity content on this page', 'unknown'],
+];
+let crashDetected = false;
+const detectUnityError = (message, origin) => {
+  if (crashDetected) {
+    return true;
+  }
+  crashDetected = true;
+  let error;
+  if (typeof message !== 'string') {
+    crashDetected = false;
+    return false;
+  }
+  // errors taken from C:\Program Files\Unity\Hub\Editor\2022.3.6f1\Editor\Data\PlaybackEngines\WebGLSupport\BuildTools\UnityLoader\UnityLoader.js
+  for (let mapping of ERROR_MAPPING) {
+    if (message.includes(mapping[0])) {
+      error = mapping[1];
+      break;
+    }
+  }
+
+  if (error) {
+    window.parent.postMessage({ type: 'unityCrashError', error, errorMessage: `${message}`,origin }, '*');
+    return true;
+  }
+  crashDetected = false;
+  return false;
+};
+(function (proxied) {
+  window.alert = function () {
+    const hasError = detectUnityError(arguments[0] || '', 'alert');
+    if (hasError) {
+      window.parent.postMessage({ type: 'unityCrashModalOpen' }, '*');
+      return;
+    }
+    return proxied.apply(this, arguments);
+  };
+})(window.alert);
+(function (proxied) {
+  console.error = function () {
+    detectUnityError(arguments[0] || '', 'console');
+    return proxied.apply(this, arguments);
+  };
+})(console.error);</script><script type="text/javascript">const debugEnabled = window.location.href.includes('iframed_unity_debug=true');
+
+let config = null;
+let unityGameInstance = null;
+let canvas = null;
+let cachedCanvasSize = { width:0, height:0 };
+
+function debugLog(...args) {
+  if (debugEnabled) {
+    console.log('[IframedUnity56]', ...args);
+  }
+}
+
+async function handleMessage(event) {
+  switch (event.data.type) {
+    case 'unity56config':
+      debugLog('Got config', event.data);
+      config = event.data.config;
+      break;
+    case 'loadGame':
+      debugLog('Requested loadGame');
+      if (unityGameInstance && unityGameInstance.Quit) {
+        unityGameInstance.Quit(() => loadGame(event.data.cacheControl));
+      } else {
+        loadGame(event.data.cacheControl);
+      }
+      break;
+    case 'focusGame':
+      window.focus();
+      if(canvas){
+        canvas.tabIndex = 1;
+        canvas.focus();
+      } 
+      break;
+    case 'unity56RequestFullScreen':
+      if(!canvas){
+        return;
+      }
+      cachedCanvasSize = { width: canvas.width, height:canvas.height };
+      const fullScreenSize = {width: window.screen.width,height:window.screen.height }
+      canvas.width = fullScreenSize.width;
+      canvas.height = fullScreenSize.height;
+      break;
+    case 'unity56DisableFullScreen':
+      if(!canvas || cachedCanvasSize.width === 0 || cachedCanvasSize.height === 0){
+        return;
+      }
+      canvas.width = cachedCanvasSize.width;
+      canvas.height = cachedCanvasSize.height;
+      break;
+    case 'disableGame':
+      await unityGameInstance.Quit();
+      break;
+  }
+}
+
+window.addEventListener('message', handleMessage);
+window.addEventListener('load', function () {
+  window.parent.postMessage({ type: 'unity56ready' }, '*');
+});
+window.addEventListener('blur', onBlur);
+
+function loadGame(cacheControl) {
+  if (!config) {
+    console.error('[IframedUnity56] config is missing');
+  }
+
+  const loaderOptions = config.loaderOptions;
+  const { moduleJsonUrl, unityLoaderUrl } = loaderOptions;
+
+  const script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.onload = function () {
+    debugLog('Instantiating game');
+    unityGameInstance = window.UnityLoader.instantiate('canvas-container', moduleJsonUrl, {
+      onProgress: function (_game, progress) {
+        window.parent.postMessage({ type: 'loadProgress', progress }, '*');
+      },
+      Module: {
+        errorhandler: (err, _url, _line) => true,
+        cacheControl: cacheControl,
+        // both company and product name required to enable caching
+        companyName: config.companyName,
+        productName: config.productName,
+        onRuntimeInitialized: function () {
+          debugLog('Runtime initialized');
+          sendDelayedMemoryUsage();
+          canvas = document.getElementsByTagName('canvas')[0];
+          window.parent.postMessage({ type: 'loadFinished' }, '*');
+        },
+      },
+    });
+  };
+  script.src = unityLoaderUrl;
+  document.body.appendChild(script);
+  debugLog('Loading loader script', script.src);
+}
+function onBlur() {
+  window.parent.postMessage({ type: 'syncUnityData' }, '*');
+};</script></head><body style="margin: 0; padding: 0"><div id="canvas-container" style="position: fixed; inset: 0px; padding: 0px; margin: 0px; border: 0px; background: rgb(20, 20, 20);"><canvas id="#canvas" width="2400" height="1305" style="width: 100%; height: 100%; cursor: default;" tabindex="1"></canvas></div><script type="text/javascript" src="./UnityLoader-v3.js"></script><script src="blob:https://space-racing-3d-void.game-files.crazygames.com/13fd1c9d-6db9-4b2a-86d4-8e8b680c12aa" id="5e962692fb62e6887e9cf4d715bf04b8"></script></body></html>

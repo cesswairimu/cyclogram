@@ -7,6 +7,7 @@ let url;
 let mainCanva; // the canva with the video --- ideally the selection boxes should be within this canva
 let patternGraphics; // the canva wherw we draw the pattern
 let videoGraphics;
+let controlsGraphics;
 let rectSize = 50;
 
 // frame vars
@@ -26,8 +27,10 @@ let pauseBtn = document.getElementById("pauseVid")
 
 function setup() {
   mainCanva = createCanvas(800, 1000).parent('canvas');
+  document.getElementById('fileInput').addEventListener('change', function (event) {
+    console.log("---got an event")
 
-  function createPattern(event) {
+    // function createPattern(event) {
     var file = event.target.files[0];
     var fileReader = new FileReader();
 
@@ -42,7 +45,8 @@ function setup() {
       video.hide();
 
       videoGraphics = createGraphics(800, 500); // space for video display
-      controlsGraphics = createGraphics(800, 80); // space for video display
+      // videoGraphics.image(video, 0, 0, videoGraphics.width, videoGraphics.height);
+      // controlsGraphics = createGraphics(800, 80); // space for video display controls
       patternGraphics = createGraphics(800, 300); // space for the graph
 
       // setup for graph 
@@ -57,10 +61,13 @@ function setup() {
 
     }
     fileReader.readAsArrayBuffer(file);
-  }
+    //draw();
 
-  $('#fileInput').on('change drop', createPattern);
-  $('.dropzone')[0].addEventListener('drop', createPattern, false);
+
+  })
+
+  //$('#fileInput').on('change drop', createPattern);
+  // $('.dropzone')[0].addEventListener('drop', createPattern, false);
 }
 
 function draw() {
@@ -70,19 +77,18 @@ function draw() {
     // canvaVideo = image(img, 0, 0); // Draw the video on the canvas
     video.noLoop();
     videoGraphics.image(video, 0, 0);
-    video.loadPixels();
     drawPattern(myX, myY);
     video.onended(handleEnd)
 
     // control graphics
-    controlsGraphics.background('cyan');
-    controlsGraphics.fill(0, 0, 0);
-    controlsGraphics.textSize(22);
-    controlsGraphics.text("The video controls will go on this space!", 50, 50);
+    // controlsGraphics.background('cyan');
+    // controlsGraphics.fill(0, 0, 0);
+    // controlsGraphics.textSize(22);
+    // controlsGraphics.text("The video controls will go on this space!", 50, 50);
 
     // draw both graphics
     image(videoGraphics, 0, 0);
-    image(controlsGraphics, 0, 530)
+    //image(controlsGraphics, 0, 530)
     image(patternGraphics, 0, 660)
 
 
@@ -109,17 +115,79 @@ function handleEnd() {
   videoPlaying = false;
 }
 
-function drawPattern(x, y) {
-  let color = [
-    video.pixels[(y * video.width * 4 * density) + (x * 4 * density)], // get red 
-    video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 1)], // get green
-    video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 2)] // get blue
-  ];
+// function drawPattern(x, y) {
+//   // patternGraphics.noStroke();
+//   video.loadPixels();
+//   if (videoPlaying && video.pixels.length > 0) {
+//     // let index = (y * video.width + x) * 4;
+//     // console.log("index", index);
+//     // let r = video.pixels[index];
+//     // let g = video.pixels[index + 1];
+//     // let b = video.pixels[index + 2];
+//     // let color = [r, g, b];r;
+//     color = [
+//           video.pixels[(y * video.width * 4 * density) + (x * 4 * density)], // get red 
+//           video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 1)], // get green
+//           video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 2)] // get blue
+//         ];
 
-  patternGraphics.noStroke();
+//     // for (let i = 0; i < video.pixels.length; i += 4) {
+//     //   video.pixels()
+      
+//     }
+
+//     // console.log("red", video.pixels[(20 * video.width + 10) * 4])
+//     // let color = [
+//     //   // video.pixels[(y * video.width * 4 * density) + (x * 4 * density)], // get red 
+//     //   video.pixels[81], // get red 
+
+
+//     //   video.pixels[99], // get green
+//     //   video.pixels[130] // get blue
+//     // ];
+//     // console.log("smth ---", video.pixels[(y * video.width * 4 * density) + (x * 4 * density)])
+//     // console.log("width--", video.width);
+//     // console.log("density--", density);
+//     // console.log("pixels--", video.pixels)
+
+//     // console.log("width--",)
+
+//     console.log("color before ----", color)
+//     //console.log("video playing---", videoPlaying)
+//     // patternGraphics.noStroke();
+//     if (videoPlaying) {
+//       patternGraphics.rect(i % framesPerDay * dotSize, rowNumber * dotSize, dotSize, dotSize);
+//       // console.log("color after", color)
+//       patternGraphics.fill(color);
+//       // patternGraphics.fill(20, 130, 5);
+//       colNumber += 1;
+//       if (i % framesPerDay == 0) {
+//         rowNumber += 1; // new row
+//         colNumber = 0;
+//       }
+//       if (i == steps) i = 0;
+//       else i++;
+//     }
+//   }
+// }
+
+function drawPattern(x, y) {
+  video.loadPixels();
+  if (videoPlaying && video.pixels.length > 0) {
+    color = [
+      video.pixels[(y * video.width * 4 * density) + (x * 4 * density)], // get red 
+      video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 1)], // get green
+      video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 2)] // get blue
+    ];
+    // color = 
+  }
+
+
   if (videoPlaying) {
     patternGraphics.rect(i % framesPerDay * dotSize, rowNumber * dotSize, dotSize, dotSize);
+
     patternGraphics.fill(color);
+
     colNumber += 1;
     if (i % framesPerDay == 0) {
       rowNumber += 1; // new row
