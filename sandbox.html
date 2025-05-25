@@ -101,6 +101,8 @@
     let framesPerDay = 288 / 2;
     let dotSize = 6;
     let videoPlaying = true;
+    let selectedRect;
+    let specificSelection = false;
 
 
 
@@ -186,7 +188,7 @@
         // console.log("my y---", myY)
 
 
-        drawPattern(myX, myY);
+        if(!specificSelection) drawPattern(myX, myY);
         video.onended(handleEnd)
 
 
@@ -224,6 +226,11 @@
           stroke('red');
           noFill()
           rect(rectX, rectY, rectSize, rectSize);
+          // console.log("selected rect-------------", selectedRect);
+          // console.log("---attempting to draw within the selected area ---")
+          //drawPattern(rectX, rectY)
+          patternGraphics.clear();
+          drawPatternAtPoint(rectX,rectY);
           // clear patternGraphics and redraw the colors within the rectangle 
         }
 
@@ -237,16 +244,56 @@
       }
     }
 
-    function drawPattern(x, y){
-      let color = [
-        video.pixels[(y * video.width * 4 * density) + (x * 4 * density)], // get red 
-        video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 1)], // get green
-        video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 2)] // get blue
-      ];
+    function drawPatternAtPoint(x, y) {
+      var color = videoGraphics.get(x, y);
+
+      if (videoPlaying) {
+        patternGraphics.rect(i % framesPerDay * dotSize, rowNumber * dotSize, dotSize, dotSize);
+        patternGraphics.fill(color);
+
+        colNumber += 1;
+        if (i % framesPerDay == 0) {
+          rowNumber += 1; // new row
+          colNumber = 0;
+        }
+        if (i == steps) i = 0;
+        else i++;
+      }
+    }
+
+    function drawPattern(x, y) {
+      x = rectX == null ? x : rectX
+      y = rectY == null ? x : rectY
+
+      let color;
+        // console.log("inside draw pattern--- videoplaying value ===>", videoPlaying)
+
+      if (rectX == null) {
+        console.log("red----", video.pixels[(y * video.width * 4 * density) + (x * 4 * density)]) 
+        console.log("red value", (y * video.width * 4 * density) + (x * 4 * density)) 
+          console.log("green----", video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 1)]); // get green
+          console.log("blue----", video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 2)]);
+        color = [
+          video.pixels[(y * video.width * 4 * density) + (x * 4 * density)], // get red 
+          video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 1)], // get green
+          video.pixels[(y * video.width * 4 * density) + (x * 4 * density + 2)] // get blue
+        ];
+        // console.log("color ====", color);
+      } else {
+        color = [
+          videoGraphics.get(x, y)];
+          // video.pixels[(y * rectSize * 4 * density) + (x * 4 * density + 1)], // get green
+          // video.pixels[(y * rectSize * 4 * density) + (x * 4 * density + 2)] // get blue
+        
+      }
+      
 
       patternGraphics.noStroke();
       if (videoPlaying) {
         patternGraphics.rect(i % framesPerDay * dotSize, rowNumber * dotSize, dotSize, dotSize);
+        // console.log("x ----------", x);
+        // console.log("y --------", y);
+        // console.log("color", color)
         patternGraphics.fill(color);
         colNumber += 1;
         if (i % framesPerDay == 0) {
@@ -263,6 +310,7 @@
         clicked = true;
         rectX = mouseX;
         rectY = mouseY;
+        specificSelection = true;
       }
     }
 
@@ -271,7 +319,8 @@
     }
 
     function isOverVideo() {
-      overVideo = mouseX >= 0 && mouseX < videoGraphics.width - rectSize && mouseY >= 0 && mouseY < videoGraphics.height - rectSize;
+      // overVideo = mouseX >= 0 && mouseX < videoGraphics.width - rectSize && mouseY >= 0 && mouseY < videoGraphics.height - rectSize;
+      overVideo = mouseX >= 0 && mouseX < video.width - rectSize && mouseY >= 0 && mouseY < video.height - rectSize;
       if (overVideo) {
         return true
       } else {
@@ -436,10 +485,14 @@
     // the rectangles only to draw within the video space. // done
     // add space(graphics) for video controls btn pattern and video // done
     // pattern space between pixel(dots) to have no grids // done
-    // get the pattern to display the shade within the red rectangle if selected
+    // get the pattern to display the shade within the red rectangle if selected // done
     // Get video to play completely once then stop(noLoop). // done
     // stop drawing pattern if video has stopped playing.// video ended handled. [maybe assign on pause press and play press ??] // somewhat handled with play/pause for now 
-    //
+    // controls to clear pattern
+    // draw random pattern if not selected, if selected draw pattern at point // done
+    // rectX, rectY display to be at the center of the rect?? rectX /(rectSize / 2) rectY /(rectSize/2) ??
+    // handle the selections for videos smaller than the videoGraphics size.
+    // resize the canvaGraphics sizes based on size(width/height of video)
 
 
     // }

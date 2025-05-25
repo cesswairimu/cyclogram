@@ -60,10 +60,10 @@
         fileReader.onload = function () {
           var blob = new Blob([fileReader.result], { type: file.type });
           var url = URL.createObjectURL(blob);
-  
+
           video = createVideo(url).parent('video');
           // rect(10,10,10,10).parent('video')
-          
+
 
           //video.elt.getVideoPlaybackQuality().totalVideoFrames // only how many frames have loaded so far
           video.elt.controls = true;
@@ -86,21 +86,21 @@
     }
 
     // function mousePressed() {
-      //         beginShape();
-      // vertex(30, 20);
-      // vertex(85, 20);
-      // vertex(85, 75);
-      // vertex(30, 75);
-      // endShape(CLOSE)
-        // Set the selection
-        // selectedX = (floor((mouseX - myX) / 60) * 60) + myX;
-        // selectedY = (floor((mouseY - myY) / 60) * 60) + myY;
-        // Only redraw when something changes.
-        //redraw();
-      // }
+    //         beginShape();
+    // vertex(30, 20);
+    // vertex(85, 20);
+    // vertex(85, 75);
+    // vertex(30, 75);
+    // endShape(CLOSE)
+    // Set the selection
+    // selectedX = (floor((mouseX - myX) / 60) * 60) + myX;
+    // selectedY = (floor((mouseY - myY) / 60) * 60) + myY;
+    // Only redraw when something changes.
+    //redraw();
+    // }
 
     function draw() {
-      background(0,0,0,0)
+      background(0, 0, 0, 0)
       image(video,)
       if (video) {
         //  video.elt.currentTime = i/frameRate;
@@ -135,10 +135,10 @@
     }
 
     function mousePressed() {
-        isRectDrawn = true;
-        rectX = mouseX;
-        rectY = mouseY;
-      }
+      isRectDrawn = true;
+      rectX = mouseX;
+      rectY = mouseY;
+    }
 
     function drawSpecificPixel() {
       // add rectangle on mouse move
