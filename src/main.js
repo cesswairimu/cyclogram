@@ -100,6 +100,8 @@ function draw() {
         stroke('red');
         noFill()
         rect(rectX, rectY, rectSize, rectSize);
+        patternGraphics.clear();
+        drawPatternAtPoint(rectX, rectY);
       }
 
       if (movingMouse) {
@@ -133,7 +135,7 @@ function handleEnd() {
 
 //     // for (let i = 0; i < video.pixels.length; i += 4) {
 //     //   video.pixels()
-      
+
 //     }
 
 //     // console.log("red", video.pixels[(20 * video.width + 10) * 4])
@@ -173,6 +175,7 @@ function handleEnd() {
 
 function drawPattern(x, y) {
   video.loadPixels();
+  patternGraphics.noStroke();
   if (videoPlaying && video.pixels.length > 0) {
     color = [
       video.pixels[(y * video.width * 4 * density) + (x * 4 * density)], // get red 
@@ -218,6 +221,24 @@ function isOverVideo() {
   }
 
 }
+
+function drawPatternAtPoint(x, y) {
+  var color = videoGraphics.get(x, y);
+
+  if (videoPlaying) {
+    patternGraphics.rect(i % framesPerDay * dotSize, rowNumber * dotSize, dotSize, dotSize);
+    patternGraphics.fill(color);
+
+    colNumber += 1;
+    if (i % framesPerDay == 0) {
+      rowNumber += 1; // new row
+      colNumber = 0;
+    }
+    if (i == steps) i = 0;
+    else i++;
+  }
+}
+
 
 
 // Event Listener for controls and toggle between play/pause
